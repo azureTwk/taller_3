@@ -1,0 +1,66 @@
+#indica la version de compose a usar
+version: "3.9"
+#en esta seccion se declaran los servicions o contenedores
+services:
+        #configuracion del contenedor php
+        php_apache:
+          build: .
+          image: php-test-now
+          container_name: php
+          ports: 
+          - $APP_PCRT:80
+          networks:
+          - red-desarrollo
+          volumes:
+                  - ./src/:/var/www/html/
+                  # - type: volume
+                  #  source: PHP-VOL
+                  #  target: /var/www/html
+
+        #configuracion contenedor mysql            
+        my_sql:
+          image: mysql
+          container_name: mysql
+          restart: always
+          networks:
+          - red-desarrollo
+
+          volumes:
+                  - type: volume
+                    source: MYSQL-VOL
+                    target: /var/lib/mysql
+          environment:
+                  MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASS
+                  MYSQL_DATABASE: $MYSQL_DATABASE
+                  MYSQL_USER: $MYSQL_USER
+                  MYSQL_PASSWORD: $MYSQL_PASSWORD
+
+        #configuracion contendor mongo_db
+        mongo_db:
+          image: mongo
+          container_name: mongo
+          restart: always
+          networks:
+          - red-desarrollo
+          volumes:
+                  - type: volume
+                    source: MONGO-VOL
+                    target: /var/lib/mongo_db
+
+#en esta seccion se declaran las redes
+networks:
+        red-desarrollo:
+                name: DESARROLLO
+                driver: bridge
+        red-produccion:
+                name: PRODUCCION
+                driver: bridge
+
+#declaracion de los volumenes
+volumes:
+        PHP-VOL:
+                external: false
+        MYSQL-VOL:
+                external: false
+        MONGO-VOL:
+                external: false
